@@ -17,4 +17,9 @@ public class PhotoUploadEventPublisher {
         String message = "Photo uploaded for customer ID: " + customerId + ", File URL: " + fileUrl;
         rabbitTemplate.convertAndSend(RabbitMQConfig.PHOTO_UPLOAD_QUEUE, message);
     }
+    public void publishDeletePhotoEvent(Long customerId) {
+        String message = "Delete photo for customer ID: " + customerId;
+        rabbitTemplate.convertAndSend(RabbitMQConfig.PHOTO_UPLOAD_QUEUE, message);
+    }
+
 }

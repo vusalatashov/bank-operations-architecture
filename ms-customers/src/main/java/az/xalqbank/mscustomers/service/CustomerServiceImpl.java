@@ -3,6 +3,7 @@ package az.xalqbank.mscustomers.service;
 import az.xalqbank.mscustomers.dto.CustomerDTO;
 import az.xalqbank.mscustomers.mapper.CustomerMapper;
 import az.xalqbank.mscustomers.model.Customer;
+import az.xalqbank.mscustomers.publisher.PhotoUploadEventPublisher;
 import az.xalqbank.mscustomers.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,6 +22,9 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final CustomerMapper customerMapper;
+    private final PhotoUploadEventPublisher photoUploadEventPublisher;
+
+
 
     @Override
     public List<CustomerDTO> getAllCustomers() {
@@ -117,18 +121,23 @@ public class CustomerServiceImpl implements CustomerService {
         redisTemplate.delete("customers:all");
         return updatedCustomerDTO;
     }
-
     @Override
     public boolean deleteCustomer(Long id) {
         if (customerRepository.existsById(id)) {
+            // Silinmiş müştərinin fotoşəkillərini silmək üçün mesaj göndəririk
+            photoUploadEventPublisher.publishDeletePhotoEvent(id);
+
+            // Müştəriyi silirik
             customerRepository.deleteById(id);
 
+            // Redis cache-dən müştəri məlumatlarını silirik
             redisTemplate.delete("customer:" + id);
             redisTemplate.delete("customers:all");
             return true;
         }
         return false;
     }
+
 
     @Override
     public CustomerDTO uploadProfilePhoto(Long customerId) {
