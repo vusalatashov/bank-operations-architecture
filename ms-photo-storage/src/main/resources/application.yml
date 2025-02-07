@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+
+  redis:
+    jedis:
+      pool:
+        max-size: 10
+        min-size: 1
+        max-total: 20
+        max-wait-duration: -1ms
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      password: ""
+      timeout: 2000
