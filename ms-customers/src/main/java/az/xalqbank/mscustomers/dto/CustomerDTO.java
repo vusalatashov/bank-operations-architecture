@@ -5,12 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class CustomerDTO {
-    private Long id;             // İsteğe bağlı; yanıt olarak gönderilebilir
-    private String name;         // Müşteri adı
-    private String email;        // Müşteri e-posta
-    private String phoneNumber;  // Müşteri telefon numarası
-    private ProfilePhotoDTO profilePhoto;  // İlişkili profil fotoğrafı bilgileri
+    private Long id;
+    private String name;
+    private String email;
+    private String phoneNumber;
+    private String profilePhoto;
 }

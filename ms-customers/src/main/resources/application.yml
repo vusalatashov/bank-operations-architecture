@@ -1,36 +1,36 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres  # PostgreSQL veril?nl?r bazas?n?n URL-i
-    username: postgres  # PostgreSQL veril?nl?r bazas?n?n istifad?�i ad?
-    password: postgres  # PostgreSQL veril?nl?r bazas?n?n parolu
-    driver-class-name: org.postgresql.Driver  # PostgreSQL s�r�c�s�n�n ad?
+    url: jdbc:postgresql://localhost:5432/postgres  # PostgreSQL veritabanı bağlantı URL'si
+    username: postgres  # PostgreSQL veritabanı kullanıcı adı
+    password: postgres  # PostgreSQL veritabanı parolası
+    driver-class-name: org.postgresql.Driver  # PostgreSQL sürücüsünün adı
     hikari:
-      maximum-pool-size: 10  # Ba?lant? hovuzunun maksimum �l��s�
-      minimum-idle: 5  # Minimum bo? ba?lant? say?
-      pool-name: HikariCP  # HikariCP ba?lant? hovuzunun ad?
-      idle-timeout: 30000  # Bo? ba?lant?lar?n maksimum g�zl?m? m�dd?ti
-      max-lifetime: 1800000  # Ba?lant? hovuzundak? ba?lant?lar?n maksimum �mr� (30 d?qiq?)
-      connection-timeout: 30000  # Ba?lant? yaratmaq ���n maksimum g�zl?m? m�dd?ti
+      maximum-pool-size: 10  # Bağlantı havuzunun maksimum boyutu
+      minimum-idle: 5  # Minimum boş bağlantı sayısı
+      pool-name: HikariCP  # HikariCP bağlantı havuzunun adı
+      idle-timeout: 30000  # Boş bağlantıların maksimum bekleme süresi
+      max-lifetime: 1800000  # Bağlantı havuzundaki bağlantıların maksimum ömrü (30 dakika)
+      connection-timeout: 30000  # Bağlantı oluşturmak için maksimum bekleme süresi
 
   jpa:
     hibernate:
-      ddl-auto: create-drop  # Hibernate avtomatik veril?nl?r bazas?n? yenil?y?c?k
+      ddl-auto: create-drop  # Hibernate otomatik olarak veritabanını güncelleyecek
     properties:
       hibernate:
-        format_sql: true  # SQL sor?ular?n? formatl? �ap etm?k
-    show-sql: true  # SQL sor?ular?n? konsola yazd?r
+        format_sql: true  # SQL sorgularını formatlı şekilde yazdır
+    show-sql: true  # SQL sorgularını konsola yazdır
 
-  # RabbitMQ konfiqurasiyas?
+  # RabbitMQ konfigürasyonu
   rabbitmq:
-    host: localhost  # RabbitMQ serverinin host ad?
-    port: 5672  # RabbitMQ serverinin portu
-    username: guest  # RabbitMQ istifad?�i ad?
-    password: guest  # RabbitMQ parolu
-    virtual-host: /  # RabbitMQ virtual host ad?
+    host: localhost  # RabbitMQ serverının host adı
+    port: 5672  # RabbitMQ serverının portu
+    username: guest  # RabbitMQ kullanıcı adı
+    password: guest  # RabbitMQ parolası
+    virtual-host: /  # RabbitMQ virtual host adı
 
-  # Redis konfiqurasiyas?
+  # Redis konfigürasyonu
   data:
     redis:
-      host: localhost  # Redis serverinin hostu
+      host: localhost  # Redis serverının hostu
       port: 6379  # Redis portu
-      password: ""  # Redis ���n parol (Docker Redis konteynerind? parol t?yin edilm?yib)
+      password: ""  # Redis için parola (Docker Redis konteynerinde parola atanmadıysa boş bırakılabilir)
