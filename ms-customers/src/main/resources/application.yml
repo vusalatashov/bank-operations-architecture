@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres  # PostgreSQL veril?nl?r bazas?n?n URL-i
+    username: postgres  # PostgreSQL veril?nl?r bazas?n?n istifad?çi ad?
+    password: postgres  # PostgreSQL veril?nl?r bazas?n?n parolu
+    driver-class-name: org.postgresql.Driver  # PostgreSQL sürücüsünün ad?
+    hikari:
+      maximum-pool-size: 10  # Ba?lant? hovuzunun maksimum ölçüsü
+      minimum-idle: 5  # Minimum bo? ba?lant? say?
+      pool-name: HikariCP  # HikariCP ba?lant? hovuzunun ad?
+      idle-timeout: 30000  # Bo? ba?lant?lar?n maksimum gözl?m? müdd?ti
+      max-lifetime: 1800000  # Ba?lant? hovuzundak? ba?lant?lar?n maksimum ömrü (30 d?qiq?)
+      connection-timeout: 30000  # Ba?lant? yaratmaq üçün maksimum gözl?m? müdd?ti
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # Hibernate avtomatik veril?nl?r bazas?n? yenil?y?c?k
+    properties:
+      hibernate:
+        format_sql: true  # SQL sor?ular?n? formatl? çap etm?k
+    show-sql: true  # SQL sor?ular?n? konsola yazd?r
+
+  # RabbitMQ konfiqurasiyas?
+  rabbitmq:
+    host: localhost  # RabbitMQ serverinin host ad?
+    port: 5672  # RabbitMQ serverinin portu
+    username: guest  # RabbitMQ istifad?çi ad?
+    password: guest  # RabbitMQ parolu
+    virtual-host: /  # RabbitMQ virtual host ad?
+
+  # Redis konfiqurasiyas?
+  data:
+    redis:
+      host: localhost  # Redis serverinin hostu
+      port: 6379  # Redis portu
+      password: ""  # Redis üçün parol (Docker Redis konteynerind? parol t?yin edilm?yib)
