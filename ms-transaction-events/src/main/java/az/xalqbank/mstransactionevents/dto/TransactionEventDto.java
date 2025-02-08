@@ -1,6 +1,7 @@
 package az.xalqbank.mstransactionevents.dto;
-import lombok.*;
 
+import lombok.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -8,15 +9,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransactionEventDto {
-
-    private String customerId;
-
+public class TransactionEventDto implements Serializable {
+    private Long customerId;
     private String transactionType;
-
     private Double amount;
-
     private LocalDateTime transactionDate;
-
     private String status;
+
+
 }

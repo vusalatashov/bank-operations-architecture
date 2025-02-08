@@ -1,24 +1,24 @@
 server:
-  port: 8082  # ms-photo-storage'?n çal??aca?? port (ms-customer ile çak??mamas? için farkl? olabilir)
+  port: 8082
 
 spring:
   application:
     name: ms-photo-storage
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/postgres    # Postgres örne?i
+    url: jdbc:postgresql://localhost:5433/postgres
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update  # Geli?tirme a?amas?nda tabloyu otomatik günceller
-    show-sql: true      # Konsolda SQL log görebilmek için
+      ddl-auto: update  # Geli?tirme a?amas?nda tabloyu otomatik gï¿½nceller
+    show-sql: true      # Konsolda SQL log gï¿½rebilmek iï¿½in
 
   rabbitmq:
     host: localhost
-    port: 5672  # BURANI DÜZ?LTD?M
+    port: 5672  # BURANI Dï¿½Z?LTD?M
     username: guest
     password: guest
 

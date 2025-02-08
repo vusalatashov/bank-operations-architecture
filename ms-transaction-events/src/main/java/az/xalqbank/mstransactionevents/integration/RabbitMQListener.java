@@ -13,6 +13,5 @@ public class RabbitMQListener {
     @RabbitListener(queues = RabbitMQConfiguration.QUEUE_NAME)
     public void receiveTransactionEvent(TransactionEventDto event) {
         log.info("Received Transaction Event: {}", event);
-        // Burada mesajı işləyə bilərsən, məsələn DB-yə yazmaq, başqa servislərə göndərmək və s.
     }
 }

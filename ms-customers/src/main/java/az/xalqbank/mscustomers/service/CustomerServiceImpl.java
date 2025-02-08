@@ -49,7 +49,14 @@ public class CustomerServiceImpl implements CustomerService {
         String cacheKey = "customer:" + id;
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 
-        CustomerDTO cachedCustomer = (CustomerDTO) valueOperations.get(cacheKey);
+        CustomerDTO cachedCustomer = null;
+        try {
+            cachedCustomer = (CustomerDTO) valueOperations.get(cacheKey);
+        } catch (ClassCastException e) {
+            // Log the error and continue
+            System.err.println("Failed to cast cached value for customerId: " + id);
+        }
+
         if (cachedCustomer != null) {
             return Optional.of(cachedCustomer);
         }
@@ -62,6 +69,7 @@ public class CustomerServiceImpl implements CustomerService {
         );
         return customerDTO;
     }
+
 
     @Override
     public Optional<CustomerDTO> getCustomerByEmail(String email) {

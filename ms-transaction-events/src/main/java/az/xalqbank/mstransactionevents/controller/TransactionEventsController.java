@@ -3,6 +3,7 @@ package az.xalqbank.mstransactionevents.controller;
 import az.xalqbank.mstransactionevents.dto.TransactionEventDto;
 import az.xalqbank.mstransactionevents.service.ITransactionEventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,24 +16,33 @@ public class TransactionEventsController {
 
     private final ITransactionEventService transactionEventService;
 
-    // Yeni transaction event yaratmaq
     @PostMapping
-    public ResponseEntity<TransactionEventDto> createTransaction(@RequestBody TransactionEventDto transactionEventDto) {
+    public ResponseEntity<TransactionEventDto> createTransaction(
+            @RequestParam Long customerId,
+            @RequestParam Double amount,
+            @RequestParam(required = false) String transactionType,  // `transactionType` ekleyin
+            @RequestParam(required = false) String status) {  // `status` ekleyin
+        TransactionEventDto transactionEventDto = TransactionEventDto.builder()
+                .customerId(customerId)
+                .amount(amount)
+                .transactionType(transactionType)
+                .status(status)
+                .build();
+
         TransactionEventDto createdTransaction = transactionEventService.createTransactionEvent(transactionEventDto);
-        return ResponseEntity.ok(createdTransaction);
+        return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
     }
 
-    // Bütün transaction event-ləri əldə etmək
+
+    // Bütün transaction-ları gətir
     @GetMapping
     public ResponseEntity<List<TransactionEventDto>> getAllTransactions() {
-        List<TransactionEventDto> transactions = transactionEventService.getAllTransactionEvents();
-        return ResponseEntity.ok(transactions);
+        return ResponseEntity.ok(transactionEventService.getAllTransactionEvents());
     }
 
-    // ID-yə görə transaction event əldə etmək
+    // ID-yə görə transaction-ları gətir
     @GetMapping("/{id}")
     public ResponseEntity<TransactionEventDto> getTransactionById(@PathVariable Long id) {
-        TransactionEventDto transaction = transactionEventService.getTransactionById(id);
-        return ResponseEntity.ok(transaction);
+        return ResponseEntity.ok(transactionEventService.getTransactionById(id));
     }
 }

@@ -2,29 +2,30 @@ package az.xalqbank.mstransactionevents.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "transaction_events")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransactionEvent {
+@Entity
+@Table(name = "transaction_events")
+public class TransactionEvent implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String customerId;
-
-    private String transactionType; // deposit, withdrawal, transfer
+    private Long customerId;
+    private String transactionType;
 
     private Double amount;
 
-    private LocalDateTime transactionDate;
+    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime transactionDate = LocalDateTime.now();  // Varsayılan değer
 
-    private String status; // success, failed, pending
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PENDING'")
+    private String status = "PENDING";  // Varsayılan değer
 }
