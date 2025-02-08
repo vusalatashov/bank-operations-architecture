@@ -1,5 +1,5 @@
 server:
-  port: 8081  # ms-photo-storage'?n çal??aca?? port (ms-customer ile çak??mamas? için farkl? olabilir)
+  port: 8082  # ms-photo-storage'?n çal??aca?? port (ms-customer ile çak??mamas? için farkl? olabilir)
 
 spring:
   application:

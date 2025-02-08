@@ -3,7 +3,7 @@ package az.xalqbank.mscustomers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "az.xalqbank.mscustomers")
 public class MsCustomersApplication {
 
     public static void main(String[] args) {

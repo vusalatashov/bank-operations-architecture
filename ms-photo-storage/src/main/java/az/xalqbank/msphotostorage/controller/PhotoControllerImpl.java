@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/photos")
+@RequestMapping("/api/v1/photos")
 @RequiredArgsConstructor
 public class PhotoControllerImpl implements PhotoController {
 
