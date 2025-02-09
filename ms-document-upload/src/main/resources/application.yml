@@ -1,0 +1,42 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: ms-photo-storage
+
+  datasource:
+    url: jdbc:postgresql://localhost:5435/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # Geli?tirme a?amas?nda tabloyu otomatik g�nceller
+    show-sql: true      # Konsolda SQL log g�rebilmek i�in
+
+  rabbitmq:
+    host: localhost
+    port: 5672  # BURANI D�Z?LTD?M
+    username: guest
+    password: guest
+
+
+  data:
+    redis:
+      host: localhost
+      port: 6382
+
+      servlet:
+        multipart:
+          enabled: true  # Enables multipart requests (file uploads)
+          max-file-size: 10MB  # Max file size for uploads
+          max-request-size: 10MB  # Max request size
+          file-size-threshold: 2000KB
+
+logging:
+  level:
+    root: INFO
+    # Uygulamam?z?n kendi paketlerinde detayl? log isterseniz:
+    az.xalqbank.msphotostorage: DEBUG

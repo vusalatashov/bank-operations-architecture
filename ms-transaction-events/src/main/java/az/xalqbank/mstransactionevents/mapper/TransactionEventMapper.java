@@ -11,7 +11,6 @@ public interface TransactionEventMapper {
     @Mapping(target = "status", expression = "java(dto.getStatus() != null ? dto.getStatus() : \"PENDING\")")
     @Mapping(target = "transactionType", expression = "java(dto.getTransactionType() != null ? dto.getTransactionType() : \"UNKNOWN\")")
     @Mapping(target = "customerId", source = "customerId")  // Explicit mapping for customerId
-
     TransactionEvent toEntity(TransactionEventDto dto);
 
     TransactionEventDto toDto(TransactionEvent transactionEvent);  // Eğer alan adları aynıysa bu yeterli olur

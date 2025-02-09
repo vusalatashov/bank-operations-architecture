@@ -5,7 +5,8 @@ import az.xalqbank.mscustomers.mapper.CustomerMapper;
 import az.xalqbank.mscustomers.model.Customer;
 import az.xalqbank.mscustomers.publisher.PhotoUploadEventPublisher;
 import az.xalqbank.mscustomers.repository.CustomerRepository;
-import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -15,24 +16,32 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Service
-@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, CustomerDTO> redisTemplate;
     private final CustomerMapper customerMapper;
     private final PhotoUploadEventPublisher photoUploadEventPublisher;
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
+    public CustomerServiceImpl(CustomerRepository customerRepository, RedisTemplate<String, CustomerDTO> redisTemplate, CustomerMapper customerMapper, PhotoUploadEventPublisher photoUploadEventPublisher) {
+        this.customerRepository = customerRepository;
+        this.redisTemplate = redisTemplate;
+        this.customerMapper = customerMapper;
+        this.photoUploadEventPublisher = photoUploadEventPublisher;
+    }
 
     @Override
     public List<CustomerDTO> getAllCustomers() {
         String cacheKey = "customers:all";
-        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-
+        ValueOperations<String, CustomerDTO> valueOperations = redisTemplate.opsForValue();
         List<CustomerDTO> customers = (List<CustomerDTO>) valueOperations.get(cacheKey);
+
         if (customers != null) {
+            logger.info("Returning cached customers.");
             return customers;
         }
 
@@ -40,53 +49,29 @@ public class CustomerServiceImpl implements CustomerService {
                 .map(customerMapper::toDto)
                 .collect(Collectors.toList());
 
-        valueOperations.set(cacheKey, customers, Duration.ofMinutes(10));
+        valueOperations.set(cacheKey, (CustomerDTO) customers, Duration.ofMinutes(10));
+        logger.info("Fetched all customers from database and cached them.");
         return customers;
     }
 
     @Override
     public Optional<CustomerDTO> getCustomerById(Long id) {
         String cacheKey = "customer:" + id;
-        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        ValueOperations<String, CustomerDTO> valueOperations = redisTemplate.opsForValue();
 
-        CustomerDTO cachedCustomer = null;
-        try {
-            cachedCustomer = (CustomerDTO) valueOperations.get(cacheKey);
-        } catch (ClassCastException e) {
-            // Log the error and continue
-            System.err.println("Failed to cast cached value for customerId: " + id);
-        }
-
+        CustomerDTO cachedCustomer = (CustomerDTO) valueOperations.get(cacheKey);
         if (cachedCustomer != null) {
+            logger.info("Returning cached customer with ID: {}", id);
             return Optional.of(cachedCustomer);
         }
 
         Optional<CustomerDTO> customerDTO = customerRepository.findById(id)
                 .map(customerMapper::toDto);
 
-        customerDTO.ifPresent(dto ->
-                valueOperations.set(cacheKey, dto, Duration.ofMinutes(10))
-        );
-        return customerDTO;
-    }
-
-
-    @Override
-    public Optional<CustomerDTO> getCustomerByEmail(String email) {
-        String cacheKey = "customer:email:" + email;
-        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-
-        CustomerDTO cachedCustomer = (CustomerDTO) valueOperations.get(cacheKey);
-        if (cachedCustomer != null) {
-            return Optional.of(cachedCustomer);
-        }
-
-        Optional<CustomerDTO> customerDTO = customerRepository
-                .findByEmail(email).map(customerMapper::toDto);
-
-        customerDTO.ifPresent(dto ->
-                valueOperations.set(cacheKey, dto, Duration.ofMinutes(10))
-        );
+        customerDTO.ifPresent(dto -> {
+            valueOperations.set(cacheKey, dto, Duration.ofMinutes(10));
+            logger.info("Fetched customer with ID: {} from database and cached it.", id);
+        });
         return customerDTO;
     }
 
@@ -105,83 +90,43 @@ public class CustomerServiceImpl implements CustomerService {
 
         redisTemplate.delete("customers:all");
 
+        logger.info("Added new customer with ID: {}", savedCustomer.getId());
         return savedCustomerDTO;
     }
 
     @Override
-    public CustomerDTO updateCustomer(Long id, String name, String email, String phoneNumber) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        if (optionalCustomer.isEmpty()) {
-            return null;
-        }
-
-        Customer customer = optionalCustomer.get();
-        customer.setName(name);
-        customer.setEmail(email);
-        customer.setPhoneNumber(phoneNumber);
-
-        Customer updatedCustomer = customerRepository.save(customer);
-        CustomerDTO updatedCustomerDTO = customerMapper.toDto(updatedCustomer);
-
-        String cacheKey = "customer:" + id;
-        redisTemplate.opsForValue().set(cacheKey, updatedCustomerDTO, Duration.ofMinutes(10));
-
-        redisTemplate.delete("customers:all");
-        return updatedCustomerDTO;
-    }
-    @Override
     public boolean deleteCustomer(Long id) {
         if (customerRepository.existsById(id)) {
-            // Silinmiş müştərinin fotoşəkillərini silmək üçün mesaj göndəririk
             photoUploadEventPublisher.publishDeletePhotoEvent(id);
-
-            // Müştəriyi silirik
             customerRepository.deleteById(id);
 
-            // Redis cache-dən müştəri məlumatlarını silirik
             redisTemplate.delete("customer:" + id);
             redisTemplate.delete("customers:all");
+
+            logger.info("Deleted customer with ID: {}", id);
             return true;
         }
+        logger.warn("Attempt to delete non-existing customer with ID: {}", id);
         return false;
     }
 
-
     @Override
-    public CustomerDTO uploadProfilePhoto(Long customerId) {
+    public void updateCustomerProfilePhoto(Long customerId, String fileUrl) {
         Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
         if (optionalCustomer.isEmpty()) {
-            return null;
+            logger.error("Customer with ID: {} not found for profile photo update.", customerId);
+            return;
         }
 
         Customer customer = optionalCustomer.get();
+        customer.setProfilePhotoUrl(fileUrl);
 
         Customer updatedCustomer = customerRepository.save(customer);
         CustomerDTO updatedCustomerDTO = customerMapper.toDto(updatedCustomer);
 
         String cacheKey = "customer:" + customerId;
         redisTemplate.opsForValue().set(cacheKey, updatedCustomerDTO, Duration.ofMinutes(10));
-        return updatedCustomerDTO;
+
+        logger.info("Profile photo updated for customer with ID: {}", customerId);
     }
-    public CustomerDTO updateCustomerProfilePhoto(Long customerId, String fileUrl) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
-        if (optionalCustomer.isEmpty()) {
-            return null;
-        }
-
-        Customer customer = optionalCustomer.get();
-        customer.setProfilePhotoUrl(fileUrl); // Profil fotosunu set edirik ✅
-
-        Customer updatedCustomer = customerRepository.save(customer); // Yenilənmiş obyekti bazaya yazırıq ✅
-        CustomerDTO updatedCustomerDTO = customerMapper.toDto(updatedCustomer);
-
-        // Redis Cache-i yeniləyirik
-        String cacheKey = "customer:" + customerId;
-        redisTemplate.opsForValue().set(cacheKey, updatedCustomerDTO, Duration.ofMinutes(10));
-
-        System.out.println("✅ [ms-customer] Profile photo updated in database for customer ID: " + customerId);
-
-        return updatedCustomerDTO;
-    }
-
 }

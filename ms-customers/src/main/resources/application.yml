@@ -2,37 +2,35 @@ server:
   port: 8081
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres  # PostgreSQL veritabanı bağlantı URL'si
-    username: postgres  # PostgreSQL veritabanı kullanıcı adı
-    password: postgres  # PostgreSQL veritabanı parolası
-    driver-class-name: org.postgresql.Driver  # PostgreSQL sürücüsünün adı
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 10  # Bağlantı havuzunun maksimum boyutu
-      minimum-idle: 5  # Minimum boş bağlantı sayısı
-      pool-name: HikariCP  # HikariCP bağlantı havuzunun adı
-      idle-timeout: 30000  # Boş bağlantıların maksimum bekleme süresi
-      max-lifetime: 1800000  # Bağlantı havuzundaki bağlantıların maksimum ömrü (30 dakika)
-      connection-timeout: 30000  # Bağlantı oluşturmak için maksimum bekleme süresi
+      maximum-pool-size: 10
+      minimum-idle: 5
+      pool-name: HikariCP
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
 
   jpa:
     hibernate:
-      ddl-auto: create-drop  # Hibernate otomatik olarak veritabanını güncelleyecek
+      ddl-auto: update
     properties:
       hibernate:
-        format_sql: true  # SQL sorgularını formatlı şekilde yazdır
-    show-sql: true  # SQL sorgularını konsola yazdır
+        format_sql: false
+    show-sql: false
 
-  # RabbitMQ konfigürasyonu
   rabbitmq:
-    host: localhost  # RabbitMQ serverının host adı
-    port: 5672  # RabbitMQ serverının portu
-    username: guest  # RabbitMQ kullanıcı adı
-    password: guest  # RabbitMQ parolası
-    virtual-host: /  # RabbitMQ virtual host adı
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
 
-  # Redis konfigürasyonu
   data:
     redis:
-      host: localhost  # Redis serverının hostu
-      port: 6379  # Redis portu
-      password: ""  # Redis için parola (Docker Redis konteynerinde parola atanmadıysa boş bırakılabilir)
+      host: localhost
+      port: 6379
+      password: ""
