@@ -1,11 +1,50 @@
+server:
+  port: 8090
+
+logging:
+  level:
+    ROOT: INFO
+    az.xalqbank: DEBUG
+    az.xalqbank.api.gateway: DEBUG
+
 spring:
   application:
-    name: gateway
-
+    name: api-gateway
   cloud:
     gateway:
       routes:
-        - id: ms-customer
-          uri: http://localhost:8081
+        - id: ms-customers
+          uri: http://localhost:8085/
           predicates:
-            - Path=/api/v1/customers/**
+            - Path=/customers/**
+          filters:
+            - StripPrefix=1
+        - id: ms-file-upload
+          uri: http://localhost:8086/
+          predicates:
+            - Path=/file-upload/**
+          filters:
+            - StripPrefix=1
+#        - id: ms-exchange
+#          uri: http://localhost:8083/
+#          predicates:
+#            - Path=/exchange/**
+#          filters:
+#            - StripPrefix=1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+application:
+  cors:
+    allowedOrigins: "*"
+    allowedHeaders: "*"
+    allowedMethods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
