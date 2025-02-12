@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: ms-photo-storage
+    name: ms-file-upload
 
   datasource:
     url: jdbc:postgresql://localhost:5433/postgres
@@ -13,23 +13,30 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update  # Geli?tirme a?amas?nda tabloyu otomatik g�nceller
-    show-sql: true      # Konsolda SQL log g�rebilmek i�in
+      ddl-auto: update  # Geliştirme aşamasında tabloyu otomatik günceller
+    show-sql: true      # Konsolda SQL log görebilmek için
 
   rabbitmq:
     host: localhost
-    port: 5672  # BURANI D�Z?LTD?M
+    port: 5672  # BURAYI DÜZENLEDİM
     username: guest
     password: guest
-
 
   data:
     redis:
       host: localhost
       port: 6379
 
+  eureka:
+    client:
+      service-url:
+        default-zone: http://localhost:8761/eureka/  # Eureka Server URL
+      register-with-eureka: true  # Eureka serverinə qeydiyyat
+      fetch-registry: true  # Eureka serverdən qeydiyyat al
+      instance-info-replication-interval-seconds: 10  # Yenilənmə intervalı
+
 logging:
   level:
     root: INFO
-    # Uygulamam?z?n kendi paketlerinde detayl? log isterseniz:
+    # Uygulamamızın kendi paketlerinde detaylı log isterseniz:
     az.xalqbank.msphotostorage: DEBUG

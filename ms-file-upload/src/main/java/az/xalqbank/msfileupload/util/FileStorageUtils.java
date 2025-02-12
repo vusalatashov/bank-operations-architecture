@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class FileStorageUtils {
 
-    private static final String UPLOAD_DIR = "ms-photo-storage/src/main/resources/uploads";
+    private static final String UPLOAD_DIR = "ms-file-upload/src/main/resources/uploads";
 
     /**
      * Saves the provided file to local storage and returns the file URL.

@@ -15,7 +15,7 @@ import java.util.List;
  * Implementation of PhotoController providing REST endpoints for photo operations.
  */
 @RestController
-@RequestMapping("/api/v1/photos")
+@RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 public class PhotoController {
 
