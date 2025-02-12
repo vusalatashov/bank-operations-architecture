@@ -1,17 +1,20 @@
 package az.xalqbank.mscustomers.service;
 
-import az.xalqbank.mscustomers.dto.CustomerDTO;
+
+
+import az.xalqbank.mscustomers.dto.request.CustomerRequest;
+import az.xalqbank.mscustomers.dto.response.CustomerResponse;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CustomerService {
 
-    List<CustomerDTO> getAllCustomers();
+    List<CustomerResponse> getAllCustomers();
 
-    Optional<CustomerDTO> getCustomerById(Long id);
+    Optional<CustomerResponse> getCustomerById(Long id);
 
-    CustomerDTO addCustomer(String name, String email, String phoneNumber);
+    CustomerResponse addCustomer(CustomerRequest customerRequest);
 
     boolean deleteCustomer(Long id);
 

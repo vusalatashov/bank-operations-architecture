@@ -1,21 +1,25 @@
 package az.xalqbank.mscustomers.controller;
 
-import az.xalqbank.mscustomers.dto.CustomerDTO;
+
+import az.xalqbank.mscustomers.dto.request.CustomerRequest;
+import az.xalqbank.mscustomers.dto.response.CustomerResponse;
 import az.xalqbank.mscustomers.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Controller implementation for managing customer-related operations.
+ * REST Controller for managing customer operations.
  */
 @RestController
 @RequestMapping("/api/v1/customers")
 @RequiredArgsConstructor
+@Validated
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -23,48 +27,44 @@ public class CustomerController {
     /**
      * Retrieves all customers.
      *
-     * @return ResponseEntity containing the list of customers
+     * @return List of customers wrapped in ResponseEntity with HTTP status 200 OK.
      */
     @GetMapping
-    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
-        List<CustomerDTO> customerDTOs = customerService.getAllCustomers();
-        return new ResponseEntity<>(customerDTOs, HttpStatus.OK);
+    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
+        List<CustomerResponse> customerResponses = customerService.getAllCustomers();
+        return new ResponseEntity<>(customerResponses, HttpStatus.OK);
     }
 
     /**
-     * Retrieves a customer by their unique ID.
+     * Retrieves a customer by ID.
      *
-     * @param id The unique identifier of the customer
-     * @return ResponseEntity containing the customer data if found
+     * @param id The ID of the customer to retrieve.
+     * @return Customer details if found, otherwise HTTP 404 Not Found.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
-        Optional<CustomerDTO> customerDTO = customerService.getCustomerById(id);
-        return customerDTO.map(ResponseEntity::ok)
+    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable Long id) {
+        Optional<CustomerResponse> customerResponse = customerService.getCustomerById(id);
+        return customerResponse.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-
     /**
-     * Adds a new customer.
+     * Creates a new customer.
      *
-     * @param customerDTO Customer data for the new customer
-     * @return ResponseEntity containing the created customer
+     * @param customerRequest The customer data for creation.
+     * @return Created customer details wrapped in ResponseEntity with HTTP status 201 Created.
      */
     @PostMapping
-    public ResponseEntity<CustomerDTO> addCustomer(@RequestBody CustomerDTO customerDTO) {
-        CustomerDTO createdCustomer = customerService.addCustomer(customerDTO.getName(),
-                customerDTO.getEmail(),
-                customerDTO.getPhoneNumber());
+    public ResponseEntity<CustomerResponse> addCustomer(@RequestBody CustomerRequest customerRequest) {
+        CustomerResponse createdCustomer = customerService.addCustomer(customerRequest);
         return new ResponseEntity<>(createdCustomer, HttpStatus.CREATED);
     }
 
-
     /**
-     * Deletes a customer by their ID.
+     * Deletes a customer by ID.
      *
-     * @param id The unique identifier of the customer
-     * @return ResponseEntity with status code based on success or failure
+     * @param id The ID of the customer to delete.
+     * @return HTTP 204 No Content if deletion was successful, otherwise HTTP 404 Not Found.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {

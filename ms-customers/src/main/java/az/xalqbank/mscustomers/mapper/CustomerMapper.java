@@ -1,6 +1,8 @@
 package az.xalqbank.mscustomers.mapper;
 
-import az.xalqbank.mscustomers.dto.CustomerDTO;
+
+import az.xalqbank.mscustomers.dto.request.CustomerRequest;
+import az.xalqbank.mscustomers.dto.response.CustomerResponse;
 import az.xalqbank.mscustomers.model.Customer;
 import org.mapstruct.Mapper;
 
@@ -8,10 +10,18 @@ import org.mapstruct.Mapper;
 public interface CustomerMapper {
 
     /**
-     * Converts a Customer entity to a CustomerDTO.
+     * Converts a Customer entity to a CustomerResponse.
      *
      * @param customer the customer entity
-     * @return the corresponding CustomerDTO
+     * @return the corresponding CustomerResponse
      */
-    CustomerDTO toDto(Customer customer);
+    CustomerResponse toResponse(Customer customer);
+
+    /**
+     * Converts a CustomerRequest to a Customer entity.
+     *
+     * @param customerRequest the customer request DTO
+     * @return the corresponding Customer entity
+     */
+    Customer toEntity(CustomerRequest customerRequest);
 }

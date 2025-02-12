@@ -1,5 +1,7 @@
 package az.xalqbank.mscustomers.exception;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Global exception handler for all controllers.
@@ -35,6 +39,31 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle ConstraintViolationException (validation errors) globally.
+     *
+     * @param ex The exception that was thrown
+     * @return ResponseEntity with the validation error details and 400 status
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(ConstraintViolationException ex) {
+        Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
+
+        String errorMessage = violations.stream()
+                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+                .collect(Collectors.joining(", "));
+
+        logger.error("Validation failed: {}", errorMessage);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                "Validation failed for request",
+                errorMessage
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+
+    /**
      * Handle any other exceptions globally.
      *
      * @param ex The exception that was thrown
@@ -42,7 +71,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        logger.error("An unexpected error occurred: {}", ex.getMessage());
+        logger.error("An unexpected error occurred: {}", ex.getMessage(), ex);
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 "An unexpected error occurred",

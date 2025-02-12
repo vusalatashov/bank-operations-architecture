@@ -9,5 +9,4 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @Configuration
 @EnableAspectJAutoProxy
 public class AopConfig {
-    // This class enables AspectJ AOP proxying in Spring
 }
