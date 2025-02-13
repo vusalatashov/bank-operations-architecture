@@ -1,0 +1,142 @@
+version: "3.8"
+
+services:
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - app-network
+
+  ms-customers:
+    build:
+      context: ./ms-customers
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-customers:5432/postgres
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_REDIS_HOST: redis
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - postgres-customers
+      - rabbitmq
+      - redis
+      - eureka-server
+    networks:
+      - app-network
+
+  ms-file-upload:
+    build:
+      context: ./ms-file-upload
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-file-upload:5432/postgres
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_REDIS_HOST: redis
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - postgres-file-upload
+      - rabbitmq
+      - redis
+      - eureka-server
+    networks:
+      - app-network
+
+  ms-transaction-events:
+    build:
+      context: ./ms-transaction-events
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-transaction:5432/postgres
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_REDIS_HOST: redis-tx
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - postgres-transaction
+      - rabbitmq
+      - redis-tx
+      - eureka-server
+    networks:
+      - app-network
+
+  ms-gateway:
+    build:
+      context: ./ms-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    environment:
+      # Bu dəyərlər Spring Cloud Gateway üçün alternativ olaraq da konfiqurasiya edilə bilər
+      SPRING_CLOUD_GATEWAY_ROUTES_0_URI: http://ms-customers:8085/
+      SPRING_CLOUD_GATEWAY_ROUTES_1_URI: http://ms-file-upload:8086/
+      SPRING_CLOUD_GATEWAY_ROUTES_2_URI: http://ms-transaction-events:8083/
+    depends_on:
+      - ms-customers
+      - ms-file-upload
+      - ms-transaction-events
+    networks:
+      - app-network
+
+  postgres-customers:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - app-network
+
+  postgres-file-upload:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - app-network
+
+  postgres-transaction:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  redis-tx:
+    image: redis:latest
+    command: redis-server --port 6381
+    ports:
+      - "6381:6381"
+    networks:
+      - app-network
+
+networks:
+  app-network:

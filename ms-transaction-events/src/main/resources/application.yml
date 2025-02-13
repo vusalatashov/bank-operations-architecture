@@ -3,14 +3,12 @@ server:
 
 spring:
   application:
-    name: ms-photo-storage
-
+    name: ms-transactions
   datasource:
-    url: jdbc:postgresql://localhost:5434/postgres
+    url: jdbc:postgresql://postgres-transaction:5432/postgres
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-
   amqp:
     deserialization:
       trust:
@@ -19,20 +17,25 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
-
-
   data:
     redis:
-      host: localhost
+      host: redis-tx
       port: 6381
+
+eureka:
+  client:
+    service-url:
+      default-zone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    instance-info-replication-interval-seconds: 10
 
 logging:
   level:
     root: INFO
-    az.xalqbank.msphotostorage: DEBUG
+    az.xalqbank.mstransactionevents: DEBUG

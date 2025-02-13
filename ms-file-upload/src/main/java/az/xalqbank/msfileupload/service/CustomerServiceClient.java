@@ -23,7 +23,7 @@ public class CustomerServiceClient {
      * @return true if the customer exists, false otherwise.
      */
     public boolean isCustomerExists(Long customerId) {
-        String url = "http://localhost:8085/api/v1/customers/" + customerId;
+        String url = "http://ms-customers:8085/api/v1/customers/" + customerId;
         try {
             ResponseEntity<Void> response = restTemplate.getForEntity(url, Void.class);
             return response.getStatusCode().is2xxSuccessful();

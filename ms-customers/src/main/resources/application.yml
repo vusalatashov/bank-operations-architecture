@@ -1,11 +1,12 @@
 server:
   port: 8085
+
 spring:
   application:
     name: ms-customers
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://postgres-customers:5432/postgres
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -20,13 +21,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: false
-    show-sql: false
 
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
@@ -34,13 +31,15 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
-      password: ""
+
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
-      register-with-eureka: true  # Eureka serverinə qeydiyyat
-      fetch-registry: true  # Eureka serverdən qeydiyyat al
-      instance-info-replication-interval-seconds: 10  # Yenilənmə intervalı
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+  instance:
+    instance-info-replication-interval-seconds: 10

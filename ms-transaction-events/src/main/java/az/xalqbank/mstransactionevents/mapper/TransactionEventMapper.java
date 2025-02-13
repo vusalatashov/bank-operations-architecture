@@ -5,13 +5,28 @@ import az.xalqbank.mstransactionevents.model.TransactionEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
-public interface TransactionEventMapper {
-    @Mapping(target = "transactionDate", expression = "java(dto.getTransactionDate() != null ? dto.getTransactionDate() : java.time.LocalDateTime.now())")
-    @Mapping(target = "status", expression = "java(dto.getStatus() != null ? dto.getStatus() : \"PENDING\")")
-    @Mapping(target = "transactionType", expression = "java(dto.getTransactionType() != null ? dto.getTransactionType() : \"UNKNOWN\")")
-    @Mapping(target = "customerId", source = "customerId")  // Explicit mapping for customerId
-    TransactionEvent toEntity(TransactionEventDto dto);
+import java.time.LocalDateTime;
 
-    TransactionEventDto toDto(TransactionEvent transactionEvent);  // Eğer alan adları aynıysa bu yeterli olur
+@Mapper(componentModel = "spring")
+public class TransactionEventMapper {
+
+    public TransactionEvent toEntity(TransactionEventDto dto){
+        return TransactionEvent.builder()
+                .customerId(dto.getCustomerId())
+                .transactionType(dto.getTransactionType())
+                .amount(dto.getAmount())
+                .transactionDate(dto.getTransactionDate() != null ? dto.getTransactionDate() : LocalDateTime.now()) // Default to current time if null
+                .status(dto.getStatus() != null ? dto.getStatus() : "PENDING")  // Ensure status is not null
+                .build();
+    }
+
+    public TransactionEventDto toDto(TransactionEvent transactionEvent){
+        return TransactionEventDto.builder()
+                .customerId(transactionEvent.getCustomerId())
+                .transactionType(transactionEvent.getTransactionType())
+                .amount(transactionEvent.getAmount())
+                .transactionDate(transactionEvent.getTransactionDate())
+                .status(transactionEvent.getStatus())
+                .build();
+    }
 }

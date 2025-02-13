@@ -4,6 +4,9 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * Data Transfer Object for TransactionEvent.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,6 +18,4 @@ public class TransactionEventDto implements Serializable {
     private Double amount;
     private LocalDateTime transactionDate;
     private String status;
-
-
 }

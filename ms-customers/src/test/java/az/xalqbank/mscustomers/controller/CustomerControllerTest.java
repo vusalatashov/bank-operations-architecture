@@ -95,19 +95,5 @@ class CustomerControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
-    @Test
-    void getAllCustomers() {
-    }
 
-    @Test
-    void getCustomerById() {
-    }
-
-    @Test
-    void addCustomer() {
-    }
-
-    @Test
-    void deleteCustomer() {
-    }
 }

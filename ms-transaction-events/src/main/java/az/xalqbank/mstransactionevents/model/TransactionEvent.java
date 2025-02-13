@@ -27,5 +27,6 @@ public class TransactionEvent implements Serializable {
     private LocalDateTime transactionDate = LocalDateTime.now();  // Varsayılan değer
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PENDING'")
-    private String status = "PENDING";  // Varsayılan değer
+    private String status = "PENDING";
+
 }
